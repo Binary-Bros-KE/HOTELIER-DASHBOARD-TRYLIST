@@ -1,0 +1,3 @@
+# SPA fallback — every path is served by index.html so client-side routing
+# works on deep links / refreshes. Netlify and Cloudflare Pages read this.
+/*    /index.html   200
