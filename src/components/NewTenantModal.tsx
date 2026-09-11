@@ -42,6 +42,9 @@ export default function NewTenantModal({
   const [trialDays, setTrialDays] = useState('30')
   const [plans, setPlans] = useState<Plan[]>([])
   const [planId, setPlanId] = useState('')
+  const [rooms, setRooms] = useState(false)
+  const [sales, setSales] = useState(false)
+  const [services, setServices] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -52,7 +55,7 @@ export default function NewTenantModal({
   }, [])
 
   const selectedPlan = plans.find((p) => p.id === planId) ?? null
-  const canSubmit = name.trim().length >= 2 && slug.length >= 3 && contactEmail.trim() && planId
+  const canSubmit = name.trim().length >= 2 && slug.length >= 3 && contactEmail.trim() && planId && (rooms || sales || services)
 
   async function submit(event: FormEvent) {
     event.preventDefault()
@@ -69,6 +72,7 @@ export default function NewTenantModal({
           contactEmail: contactEmail.trim(),
           planId,
           trialDays: Number(trialDays) || undefined,
+          modules: { rooms, sales, services },
         }),
       })
       onCreated(result)
@@ -184,8 +188,37 @@ export default function NewTenantModal({
             </select>
           </Field>
         </div>
+
+        <div className="sm:col-span-2">
+          <div className="mb-3 mt-1 border-t pt-4 text-xs font-semibold uppercase tracking-wide text-accent">
+            Modules
+          </div>
+          <p className="mb-2 text-xs text-muted-foreground">
+            Pick at least one — everything else (Team, Finance, Reports, Inventory) is available to every tenant regardless.
+          </p>
+          <div className="grid gap-2 sm:grid-cols-3">
+            <ModuleToggle label="Room Management" hint="Reception, check-in, housekeeping" checked={rooms} onChange={setRooms} />
+            <ModuleToggle label="Sales" hint="Menu items, kitchen, products POS" checked={sales} onChange={setSales} />
+            <ModuleToggle label="Services" hint="Spa/gym bookings, memberships" checked={services} onChange={setServices} />
+          </div>
+          {!rooms && !sales && !services && (
+            <p className="mt-2 flex items-center gap-1.5 text-xs text-destructive"><LuCircleAlert className="size-3.5" /> Enable at least one module</p>
+          )}
+        </div>
       </form>
     </Modal>
+  )
+}
+
+export function ModuleToggle({ label, hint, checked, onChange }: { label: string; hint: string; checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <label className="flex cursor-pointer items-start gap-2.5 rounded-sm border bg-background px-3 py-2.5 text-sm has-[:checked]:border-accent has-[:checked]:bg-accent/5">
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-0.5 size-4 accent-accent" />
+      <span>
+        <span className="block font-semibold">{label}</span>
+        <span className="block text-xs text-muted-foreground">{hint}</span>
+      </span>
+    </label>
   )
 }
 

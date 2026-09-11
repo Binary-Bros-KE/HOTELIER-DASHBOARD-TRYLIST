@@ -4,7 +4,7 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import { LuArrowLeft, LuCheck, LuCircleAlert, LuCopy, LuLoaderCircle, LuPencil, LuTriangleAlert, LuX } from 'react-icons/lu'
 import { api } from '@/lib/api'
 import { type Plan, type PlanRef, planPriceSummary } from '@/lib/plans'
-import type { CreatedTenant } from '@/components/NewTenantModal'
+import { ModuleToggle, type CreatedTenant } from '@/components/NewTenantModal'
 import StatusBadge, { type LicenseStatus } from '@/components/StatusBadge'
 
 type BusinessProfile = {
@@ -43,6 +43,7 @@ type TenantDetail = {
   maxDevices: number
   lastLicenseCheck: string | null
   moduleKeys: string[]
+  moduleGroups: { rooms: boolean; sales: boolean; services: boolean }
   employeeCount: number
   locationCount: number
   roleCount: number
@@ -77,6 +78,7 @@ export default function TenantDetail() {
   const [plan, setPlan] = useState({ planId: '', subscriptionPlan: '', maxBranches: '', maxUsers: '', maxDevices: '', nextDueDate: '' })
   const [licenseStatus, setLicenseStatus] = useState<LicenseStatus>('TRIAL')
   const [plans, setPlans] = useState<Plan[]>([])
+  const [modules, setModules] = useState({ rooms: false, sales: false, services: false })
 
   const [editingProfile, setEditingProfile] = useState(false)
   const [draft, setDraft] = useState<Record<'tenantName' | 'slug' | 'businessType' | 'currency' | ProfileField, string>>(() => blankDraft())
@@ -96,6 +98,7 @@ export default function TenantDetail() {
         nextDueDate: toDateInput(response.tenant.nextDueDate),
       })
       setLicenseStatus(response.tenant.licenseStatus)
+      setModules(response.tenant.moduleGroups)
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Could not load this tenant')
     } finally {
@@ -226,6 +229,21 @@ export default function TenantDetail() {
     }
   }
 
+  async function saveModules() {
+    setSaving(true)
+    setNotice('')
+    setError('')
+    try {
+      await api(`/platform/tenants/${id}/modules`, { method: 'PATCH', body: JSON.stringify(modules) })
+      setNotice('Modules updated.')
+      await load()
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Could not update modules')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   const planLabel = useMemo(() => {
     if (!tenant) return '—'
     return tenant.plan ? `${tenant.plan.name} · ${planPriceSummary(tenant.plan)}` : tenant.subscriptionPlan
@@ -347,7 +365,11 @@ export default function TenantDetail() {
               <DataTile label="Employees" value={String(tenant.employeeCount)} />
               <DataTile label="Subscription start" value={formatDate(tenant.subscriptionStart)} />
               <DataTile label="Last license check" value={formatDateTime(tenant.lastLicenseCheck)} />
-              <DataTile label="Modules enabled" value={tenant.moduleKeys.join(', ') || '—'} className="col-span-2" />
+              <DataTile
+                label="Modules enabled"
+                value={[tenant.moduleGroups.rooms && 'Room Management', tenant.moduleGroups.sales && 'Sales', tenant.moduleGroups.services && 'Services'].filter(Boolean).join(', ') || 'None'}
+                className="col-span-2"
+              />
             </div>
 
             <p className="eyebrow mt-7">Extended business profile</p>
@@ -438,6 +460,30 @@ export default function TenantDetail() {
                 Update status
               </button>
             </div>
+          </div>
+        </section>
+
+        <section className="border bg-card">
+          <h2 className="border-b px-5 py-3 text-sm font-bold uppercase tracking-wide">Modules</h2>
+          <div className="p-5">
+            <p className="text-xs text-muted-foreground">
+              What this tenant's sidebar shows. Everything else (Team, Finance, Reports, Inventory) is available regardless.
+            </p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+              <ModuleToggle label="Room Management" hint="Reception, check-in, housekeeping" checked={modules.rooms} onChange={(v) => setModules({ ...modules, rooms: v })} />
+              <ModuleToggle label="Sales" hint="Menu items, kitchen, products POS" checked={modules.sales} onChange={(v) => setModules({ ...modules, sales: v })} />
+              <ModuleToggle label="Services" hint="Spa/gym bookings, memberships" checked={modules.services} onChange={(v) => setModules({ ...modules, services: v })} />
+            </div>
+            {!modules.rooms && !modules.sales && !modules.services && (
+              <p className="mt-2 flex items-center gap-1.5 text-xs text-destructive"><LuCircleAlert className="size-3.5" /> At least one module must stay enabled</p>
+            )}
+            <button
+              onClick={() => void saveModules()}
+              disabled={saving || (!modules.rooms && !modules.sales && !modules.services) || (modules.rooms === tenant.moduleGroups.rooms && modules.sales === tenant.moduleGroups.sales && modules.services === tenant.moduleGroups.services)}
+              className="mt-4 inline-flex items-center gap-2 bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+            >
+              {saving && <LuLoaderCircle className="animate-spin" />} Save modules
+            </button>
           </div>
         </section>
 
