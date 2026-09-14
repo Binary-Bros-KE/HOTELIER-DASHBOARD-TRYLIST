@@ -5,7 +5,7 @@ import { api } from '@/lib/api'
 import Modal from '@/components/Modal'
 import { type Plan, planPriceSummary } from '@/lib/plans'
 
-const BUSINESS_TYPES = ['HOTEL', 'MOTEL', 'RESTAURANT', 'CAFE'] as const
+const BUSINESS_TYPES = ['HOTEL', 'MOTEL', 'RESTAURANT', 'CAFE', 'CLUB'] as const
 const CURRENCIES = ['KES', 'UGX', 'TZS', 'USD'] as const
 
 export type CreatedTenant = {

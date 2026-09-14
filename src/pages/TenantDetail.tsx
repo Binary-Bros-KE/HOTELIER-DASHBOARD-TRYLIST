@@ -330,7 +330,7 @@ export default function TenantDetail() {
                 required
               />
               <FieldInput label="Business name" value={draft.businessName} onChange={(v) => setDraft({ ...draft, businessName: v })} />
-              <FieldSelect label="Business type" value={draft.businessType} onChange={(v) => setDraft({ ...draft, businessType: v })} options={['HOTEL', 'MOTEL', 'RESTAURANT', 'CAFE']} />
+              <FieldSelect label="Business type" value={draft.businessType} onChange={(v) => setDraft({ ...draft, businessType: v })} options={['HOTEL', 'MOTEL', 'RESTAURANT', 'CAFE', 'CLUB']} />
               <FieldSelect label="Currency" value={draft.currency} onChange={(v) => setDraft({ ...draft, currency: v })} options={['KES', 'UGX', 'TZS', 'USD']} />
               <FieldInput label="Contact email" type="email" value={draft.email} onChange={(v) => setDraft({ ...draft, email: v })} />
               <FieldInput label="Contact phone" value={draft.primaryPhone} onChange={(v) => setDraft({ ...draft, primaryPhone: v })} />
