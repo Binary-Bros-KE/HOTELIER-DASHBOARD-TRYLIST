@@ -18,7 +18,7 @@ const EMPTY: Draft = {
   siteTitle: null, tagline: null, seoTitle: null, seoDescription: null, ogImageUrl: null, analyticsId: null,
   whatsappNumber: null, mapEmbedUrl: null, latitude: null, longitude: null, socialLinks: {},
   featureRoomBooking: false, featureMenu: false, featureAppointments: false, featureMemberships: false, featureInquiries: true,
-  bookingConfirmation: 'MANUAL', requirePayment: false, depositPercent: '100', holdMinutes: 30, bookingLocationId: null,
+  bookingConfirmation: 'MANUAL', requirePayment: false, depositPercent: '100', depositMinimum: '0', holdMinutes: 30, bookingLocationId: null,
 }
 
 function toDraft(website: Website | null): Draft {
@@ -165,12 +165,15 @@ export function SettingsTab({ tenantId, overview, onSaved }: { tenantId: string;
             </select>
           </Field>
           <div className="sm:col-span-2">
-            <Toggle label="Require payment to book" hint="M-Pesa prompt at checkout" checked={draft.requirePayment} onChange={(v) => set('requirePayment', v)} />
+            <Toggle label="Require an M-Pesa deposit for room bookings" hint="The guest pays by M-Pesa prompt while booking; the room is held until they do. Needs M-Pesa set up on the booking location." checked={draft.requirePayment} onChange={(v) => set('requirePayment', v)} />
           </div>
-          <Field label="Deposit (%)" hint="Share of the total paid online">
+          <Field label="Deposit (% of the stay)" hint="100 = pay in full">
             <input className="input" type="number" min={1} max={100} disabled={!draft.requirePayment} value={draft.depositPercent} onChange={(e) => set('depositPercent', e.target.value)} />
           </Field>
-          <Field label="Hold unpaid bookings for (minutes)">
+          <Field label="Minimum deposit (KSh)" hint="The guest pays whichever is higher — never more than the stay">
+            <input className="input" type="number" min={0} step={100} disabled={!draft.requirePayment} value={draft.depositMinimum} onChange={(e) => set('depositMinimum', e.target.value)} />
+          </Field>
+          <Field label="Hold unpaid bookings for (minutes)" hint="Unpaid bookings are released after this">
             <input className="input" type="number" min={5} max={1440} value={draft.holdMinutes} onChange={(e) => set('holdMinutes', Number(e.target.value))} />
           </Field>
         </div>

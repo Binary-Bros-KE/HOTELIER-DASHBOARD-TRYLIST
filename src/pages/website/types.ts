@@ -32,6 +32,7 @@ export type Website = {
   bookingConfirmation: 'AUTO' | 'MANUAL'
   requirePayment: boolean
   depositPercent: string
+  depositMinimum: string
   holdMinutes: number
   bookingLocationId: string | null
 }
@@ -82,6 +83,20 @@ export type Overview = {
   previewUrl: string | null
   systemSlugs: string[]
   siteDomain: string | null
+}
+
+export type Inquiry = {
+  id: string
+  kind: 'GENERAL' | 'EVENT' | 'ROOM' | 'SERVICE' | 'MEMBERSHIP'
+  status: 'NEW' | 'CONTACTED' | 'CLOSED' | 'SPAM'
+  name: string
+  email: string | null
+  phone: string | null
+  subject: string | null
+  message: string
+  details: Record<string, string | number> | null
+  sourcePage: string | null
+  createdAt: string
 }
 
 export type Media = { id: string; url: string; fileName: string; mimeType: string; sizeBytes: number; altText: string | null; createdAt: string }

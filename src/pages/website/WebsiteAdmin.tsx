@@ -5,6 +5,7 @@ import { api } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { CatalogTab } from './CatalogTab'
 import { DomainsTab } from './DomainsTab'
+import { InquiriesTab } from './InquiriesTab'
 import { MediaLibrary } from './MediaLibrary'
 import { PagesTab } from './PagesTab'
 import { SettingsTab } from './SettingsTab'
@@ -17,6 +18,7 @@ const TABS = [
   ['catalog', 'Show online'],
   ['media', 'Media'],
   ['domains', 'Domains'],
+  ['inquiries', 'Enquiries'],
 ] as const
 type Tab = (typeof TABS)[number][0]
 
@@ -150,6 +152,7 @@ export default function WebsiteAdmin() {
         {tab === 'catalog' && <CatalogTab tenantId={id} />}
         {tab === 'media' && <Panel title="Media library"><MediaLibrary tenantId={id} /></Panel>}
         {tab === 'domains' && <DomainsTab tenantId={id} overview={overview} slug={tenant.slug} onChanged={load} />}
+        {tab === 'inquiries' && <InquiriesTab tenantId={id} />}
       </div>
     </div>
   )
