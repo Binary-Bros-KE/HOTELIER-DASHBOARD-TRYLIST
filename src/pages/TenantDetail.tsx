@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
-import { LuArrowLeft, LuCheck, LuCircleAlert, LuCopy, LuLoaderCircle, LuPencil, LuTriangleAlert, LuX } from 'react-icons/lu'
+import { LuArrowLeft, LuCheck, LuCircleAlert, LuCopy, LuGlobe, LuLoaderCircle, LuPencil, LuTriangleAlert, LuX } from 'react-icons/lu'
 import { api } from '@/lib/api'
 import { type Plan, type PlanRef, planPriceSummary } from '@/lib/plans'
 import { ModuleToggle, type CreatedTenant } from '@/components/NewTenantModal'
@@ -274,7 +274,12 @@ export default function TenantDetail() {
             {tenant.slug}{p?.email ? ` · ${p.email}` : ''}
           </p>
         </div>
-        <StatusBadge status={tenant.licenseStatus} />
+        <div className="flex items-center gap-3">
+          <Link to={`/tenants/${tenant.id}/website`} className="inline-flex items-center gap-1.5 border px-3 py-1.5 text-xs font-semibold hover:bg-muted">
+            <LuGlobe className="size-3.5" /> Website
+          </Link>
+          <StatusBadge status={tenant.licenseStatus} />
+        </div>
       </header>
 
       {justCreated && showCreated && (

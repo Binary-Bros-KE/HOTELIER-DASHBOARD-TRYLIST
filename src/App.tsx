@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from '@/pages/Login'
 import TenantsList from '@/pages/TenantsList'
 import TenantDetail from '@/pages/TenantDetail'
+import WebsiteAdmin from '@/pages/website/WebsiteAdmin'
 import Plans from '@/pages/Plans'
 import Accounts from '@/pages/Accounts'
 import ComingSoon from '@/pages/ComingSoon'
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/" element={<Navigate to="/tenants" replace />} />
         <Route path="/tenants" element={<TenantsList />} />
         <Route path="/tenants/:id" element={<TenantDetail />} />
+        <Route path="/tenants/:id/website" element={<WebsiteAdmin />} />
         {/* Layout-only sections mirrored from the Blue Ledger admin dash —
             no page yet, so they render the shared placeholder. */}
         <Route path="/overview" element={<ComingSoon />} />
