@@ -43,7 +43,7 @@ type TenantDetail = {
   maxDevices: number
   lastLicenseCheck: string | null
   moduleKeys: string[]
-  moduleGroups: { rooms: boolean; sales: boolean; services: boolean }
+  moduleGroups: { rooms: boolean; sales: boolean; services: boolean; website: boolean }
   employeeCount: number
   locationCount: number
   roleCount: number
@@ -78,7 +78,7 @@ export default function TenantDetail() {
   const [plan, setPlan] = useState({ planId: '', subscriptionPlan: '', maxBranches: '', maxUsers: '', maxDevices: '', nextDueDate: '' })
   const [licenseStatus, setLicenseStatus] = useState<LicenseStatus>('TRIAL')
   const [plans, setPlans] = useState<Plan[]>([])
-  const [modules, setModules] = useState({ rooms: false, sales: false, services: false })
+  const [modules, setModules] = useState({ rooms: false, sales: false, services: false, website: false })
 
   const [editingProfile, setEditingProfile] = useState(false)
   const [draft, setDraft] = useState<Record<'tenantName' | 'slug' | 'businessType' | 'currency' | ProfileField, string>>(() => blankDraft())
@@ -367,7 +367,7 @@ export default function TenantDetail() {
               <DataTile label="Last license check" value={formatDateTime(tenant.lastLicenseCheck)} />
               <DataTile
                 label="Modules enabled"
-                value={[tenant.moduleGroups.rooms && 'Room Management', tenant.moduleGroups.sales && 'Sales', tenant.moduleGroups.services && 'Services'].filter(Boolean).join(', ') || 'None'}
+                value={[tenant.moduleGroups.rooms && 'Room Management', tenant.moduleGroups.sales && 'Sales', tenant.moduleGroups.services && 'Services', tenant.moduleGroups.website && 'Website'].filter(Boolean).join(', ') || 'None'}
                 className="col-span-2"
               />
             </div>
@@ -469,17 +469,18 @@ export default function TenantDetail() {
             <p className="text-xs text-muted-foreground">
               What this tenant's sidebar shows. Everything else (Team, Finance, Reports, Inventory) is available regardless.
             </p>
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
               <ModuleToggle label="Room Management" hint="Reception, check-in, housekeeping" checked={modules.rooms} onChange={(v) => setModules({ ...modules, rooms: v })} />
               <ModuleToggle label="Sales" hint="Menu items, kitchen, products POS" checked={modules.sales} onChange={(v) => setModules({ ...modules, sales: v })} />
               <ModuleToggle label="Services" hint="Spa/gym bookings, memberships" checked={modules.services} onChange={(v) => setModules({ ...modules, services: v })} />
+              <ModuleToggle label="Website" hint="Public site, online bookings" checked={modules.website} onChange={(v) => setModules({ ...modules, website: v })} />
             </div>
             {!modules.rooms && !modules.sales && !modules.services && (
               <p className="mt-2 flex items-center gap-1.5 text-xs text-destructive"><LuCircleAlert className="size-3.5" /> At least one module must stay enabled</p>
             )}
             <button
               onClick={() => void saveModules()}
-              disabled={saving || (!modules.rooms && !modules.sales && !modules.services) || (modules.rooms === tenant.moduleGroups.rooms && modules.sales === tenant.moduleGroups.sales && modules.services === tenant.moduleGroups.services)}
+              disabled={saving || (!modules.rooms && !modules.sales && !modules.services) || (modules.rooms === tenant.moduleGroups.rooms && modules.sales === tenant.moduleGroups.sales && modules.services === tenant.moduleGroups.services && modules.website === tenant.moduleGroups.website)}
               className="mt-4 inline-flex items-center gap-2 bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
             >
               {saving && <LuLoaderCircle className="animate-spin" />} Save modules
