@@ -125,6 +125,22 @@ export const SECTION_DEFS: Record<string, SectionDef> = {
     description: 'A mosaic of photographs. Six at a time fill the grid neatly.',
     fields: [...heading, { key: 'images', label: 'Photographs', kind: 'images', withCaption: true }],
   },
+  pathways: {
+    label: 'Guest pathways',
+    description: 'Photo cards that send each kind of guest to the right page — e.g. Stay, Celebrate, Meet, Dine.',
+    fields: [
+      ...heading,
+      {
+        key: 'items', label: 'Cards', kind: 'list', itemLabel: 'card',
+        fields: [
+          { key: 'title', label: 'Title', kind: 'text', placeholder: 'Stay' },
+          { key: 'text', label: 'Line', kind: 'text', placeholder: 'Restful rooms with breakfast, half or full board' },
+          { key: 'image', label: 'Photo', kind: 'image' },
+          { key: 'link', label: 'Link', kind: 'link' },
+        ],
+      },
+    ],
+  },
   testimonials: {
     label: 'Testimonials',
     description: 'Guest quotes. Only use real ones.',

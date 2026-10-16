@@ -35,6 +35,7 @@ export type Website = {
   depositMinimum: string
   holdMinutes: number
   bookingLocationId: string | null
+  redirects: { from: string; to: string }[]
 }
 
 export type Theme = { key: string; name: string; description: string | null; version: string; sectionTypes: string[] }

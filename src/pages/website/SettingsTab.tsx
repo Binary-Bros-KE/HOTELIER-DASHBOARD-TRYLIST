@@ -8,7 +8,7 @@ import { Btn, errorMessage, Field, Notice, Panel, TextInput, Toggle } from './ui
 
 const SOCIALS = [
   ['facebook', 'Facebook'], ['instagram', 'Instagram'], ['tiktok', 'TikTok'], ['x', 'X (Twitter)'],
-  ['youtube', 'YouTube'], ['tripadvisor', 'Tripadvisor'], ['linkedin', 'LinkedIn'],
+  ['youtube', 'YouTube'], ['tripadvisor', 'Tripadvisor'], ['google', 'Google reviews link'], ['linkedin', 'LinkedIn'],
 ] as const
 
 type Draft = Omit<Website, 'id' | 'tenantId' | 'status' | 'publishedAt'>
@@ -19,6 +19,7 @@ const EMPTY: Draft = {
   whatsappNumber: null, mapEmbedUrl: null, latitude: null, longitude: null, socialLinks: {},
   featureRoomBooking: false, featureMenu: false, featureAppointments: false, featureMemberships: false, featureInquiries: true,
   bookingConfirmation: 'MANUAL', requirePayment: false, depositPercent: '100', depositMinimum: '0', holdMinutes: 30, bookingLocationId: null,
+  redirects: [],
 }
 
 function toDraft(website: Website | null): Draft {
@@ -42,6 +43,8 @@ export function SettingsTab({ tenantId, overview, onSaved }: { tenantId: string;
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => setDraft((d) => ({ ...d, [key]: value }))
+  // Edited as text ("/from /to" per line); parsed on save.
+  const [redirectText, setRedirectText] = useState(() => (overview.website?.redirects ?? []).map((r) => `${r.from} ${r.to}`).join('\n'))
   const creating = !overview.website
 
   async function save(e: FormEvent) {
@@ -54,7 +57,14 @@ export function SettingsTab({ tenantId, overview, onSaved }: { tenantId: string;
       const socialLinks = Object.fromEntries(Object.entries(draft.socialLinks).filter(([, url]) => url?.trim()))
       const result = await api<{ website: Website }>(`/platform/tenants/${tenantId}/website`, {
         method: 'PUT',
-        body: JSON.stringify({ ...draft, socialLinks }),
+        body: JSON.stringify({
+          ...draft,
+          socialLinks,
+          redirects: redirectText.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
+            const [from, to] = l.split(/\s+/)
+            return { from, to: to ?? '' }
+          }),
+        }),
       })
       setDraft(toDraft(result.website))
       onSaved(result.website)
@@ -177,6 +187,20 @@ export function SettingsTab({ tenantId, overview, onSaved }: { tenantId: string;
             <input className="input" type="number" min={5} max={1440} value={draft.holdMinutes} onChange={(e) => set('holdMinutes', Number(e.target.value))} />
           </Field>
         </div>
+      </Panel>
+
+      <Panel title="Redirects from old addresses">
+        <p className="mb-3 text-xs text-muted-foreground">
+          Send links and search results for a previous website's pages to the right new page (permanent 301). One per line:
+          <code className="mx-1">/old-address /new-address</code>. End the old address with <code>/*</code> to cover everything under it.
+        </p>
+        <TextInput
+          multiline
+          rows={6}
+          value={redirectText}
+          placeholder={'/accomodation /rooms\n/restaurant-menu/* /dining'}
+          onChange={setRedirectText}
+        />
       </Panel>
 
       {error && <Notice kind="error">{error}</Notice>}
