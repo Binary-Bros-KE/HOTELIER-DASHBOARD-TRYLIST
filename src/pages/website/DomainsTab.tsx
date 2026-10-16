@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import type { Domain, Overview } from './types'
 import { Btn, errorMessage, Field, Notice, Panel, TextInput } from './ui'
 
-const STATUS_LABEL: Record<Domain['status'], string> = { PENDING_DNS: 'Waiting for DNS', VERIFYING: 'Verifying', ACTIVE: 'Active', FAILED: 'Not verified' }
+const STATUS_LABEL: Record<Domain['status'], string> = { PENDING_DNS: 'Waiting for DNS', VERIFYING: 'Issuing certificate', ACTIVE: 'Active', FAILED: 'Not verified' }
 
 function Copyable({ value }: { value: string }) {
   const [copied, setCopied] = useState(false)
@@ -30,6 +30,7 @@ export function DomainsTab({ tenantId, overview, slug, onChanged }: { tenantId: 
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const platformHost = overview.siteDomain ? `${slug}.${overview.siteDomain}` : null
+  const cnameTarget = overview.cnameTarget ?? platformHost
 
   async function run(key: string, action: () => Promise<string | void>) {
     setBusy(key)
@@ -100,9 +101,13 @@ export function DomainsTab({ tenantId, overview, slug, onChanged }: { tenantId: 
                       <Copyable value={domain.verificationToken} />
                       <span className="font-semibold">CNAME</span>
                       <Copyable value={domain.hostname} />
-                      <Copyable value={platformHost ?? `${slug}.<SITE_DOMAIN>`} />
+                      <Copyable value={cnameTarget ?? `${slug}.<SITE_DOMAIN>`} />
                     </div>
-                    <p className="text-xs text-muted-foreground">A bare domain (no www) can't use CNAME at most providers — point its A record at the server's IP address instead.</p>
+                    <p className="text-xs text-muted-foreground">
+                      Use a subdomain such as <strong>www</strong> — a bare domain (example.com) can't take a CNAME at most providers.
+                      Ask the provider to forward the bare domain to the www address. Once the CNAME is in place, “Check DNS” registers the
+                      domain and its certificate is issued within minutes; press it again to refresh.
+                    </p>
                     {domain.lastError && <p className="text-xs text-destructive">Last check: {domain.lastError}</p>}
                   </div>
                 )}

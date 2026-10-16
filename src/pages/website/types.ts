@@ -83,6 +83,8 @@ export type Overview = {
   previewUrl: string | null
   systemSlugs: string[]
   siteDomain: string | null
+  /** Where clients CNAME their own domain (null = custom domains not set up on the server). */
+  cnameTarget: string | null
 }
 
 export type Inquiry = {
