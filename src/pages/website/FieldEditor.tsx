@@ -188,7 +188,7 @@ export function FieldList({ fields, values, onChange, ctx }: { fields: FieldDef[
         if (field.kind === 'boolean') {
           return (
             <label key={field.key} className="flex items-center gap-2 text-sm">
-              <input type="checkbox" className="size-4 accent-accent" checked={Boolean(values[field.key] ?? true)} onChange={(e) => set(e.target.checked)} />
+              <input type="checkbox" className="size-4 accent-accent" checked={Boolean(values[field.key] ?? field.default)} onChange={(e) => set(e.target.checked)} />
               {field.label}
             </label>
           )

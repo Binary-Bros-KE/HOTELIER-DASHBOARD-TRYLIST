@@ -7,7 +7,9 @@ export type RefSource = 'roomTypes' | 'menuCategories' | 'serviceCategories'
 
 export type FieldDef =
   | { key: string; label: string; kind: 'text' | 'textarea'; hint?: string; placeholder?: string }
-  | { key: string; label: string; kind: 'image' | 'link' | 'boolean'; hint?: string }
+  | { key: string; label: string; kind: 'image' | 'link'; hint?: string }
+  /** `default` mirrors the website schema's default (unset = that value). */
+  | { key: string; label: string; kind: 'boolean'; default: boolean; hint?: string }
   | { key: string; label: string; kind: 'number'; min: number; max: number; hint?: string }
   | { key: string; label: string; kind: 'select'; options: { value: string; label: string }[]; hint?: string }
   | { key: string; label: string; kind: 'tags'; hint?: string; placeholder?: string }
@@ -39,7 +41,7 @@ export const SECTION_DEFS: Record<string, SectionDef> = {
       { key: 'images', label: 'Photographs', kind: 'images', hint: 'Several photos crossfade slowly' },
       { key: 'primaryCta', label: 'Main button', kind: 'link' },
       { key: 'secondaryCta', label: 'Second button', kind: 'link' },
-      { key: 'showBookingBar', label: 'Show the check-availability bar (when room booking is on)', kind: 'boolean' },
+      { key: 'showBookingBar', label: 'Show the check-availability bar (when room booking is on)', kind: 'boolean', default: true },
       { key: 'height', label: 'Height', kind: 'select', options: [{ value: 'full', label: 'Full screen' }, { value: 'tall', label: 'Tall' }] },
     ],
   },
@@ -51,6 +53,7 @@ export const SECTION_DEFS: Record<string, SectionDef> = {
       { key: 'body', label: 'Text', kind: 'textarea' },
       { key: 'align', label: 'Alignment', kind: 'select', options: [{ value: 'center', label: 'Centred' }, { value: 'left', label: 'Left' }] },
       { key: 'signature', label: 'Closing line', kind: 'text', hint: 'Small capitals under the text, e.g. opening hours' },
+      { key: 'compact', label: 'Compact spacing (for several text sections in a row)', kind: 'boolean', default: false },
     ],
   },
   'image-text': {
@@ -167,7 +170,7 @@ export const SECTION_DEFS: Record<string, SectionDef> = {
     fields: [
       ...heading,
       { key: 'hours', label: 'Opening hours', kind: 'text', placeholder: 'Monday – Sunday · 6:00 AM – 11:00 PM' },
-      { key: 'showMap', label: 'Show the map', kind: 'boolean' },
+      { key: 'showMap', label: 'Show the map', kind: 'boolean', default: true },
     ],
   },
 }
